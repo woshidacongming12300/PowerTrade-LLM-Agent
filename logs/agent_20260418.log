@@ -1,0 +1,117 @@
+2026-04-18 10:57:11,236 - agent - INFO - vector_store.py:128 - [加载知识库]D:\python\project\Agent项目\data\电价预测模型发展及综述.pdf 内容加载成功
+2026-04-18 10:57:23,119 - agent - INFO - vector_store.py:128 - [加载知识库]D:\python\project\Agent项目\data\电力市场电价预测方法综述 (4).pdf 内容加载成功
+2026-04-18 11:06:07,174 - agent - INFO - vector_store.py:114 - [加载知识库]D:\python\project\Agent项目\data\电价预测模型发展及综述.pdf内容已经存在知识库内，跳过
+2026-04-18 11:06:07,974 - agent - INFO - vector_store.py:114 - [加载知识库]D:\python\project\Agent项目\data\电力市场电价预测方法综述 (4).pdf内容已经存在知识库内，跳过
+2026-04-18 11:19:34,443 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有1条消息。
+2026-04-18 11:19:34,443 - agent - DEBUG - middleware.py:42 - [log_before_model]HumanMessage | 预测一下明天的电价
+2026-04-18 11:19:36,071 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：predict_electricity_price
+2026-04-18 11:19:36,072 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'target_date': '明天'}
+2026-04-18 11:19:36,074 - agent - INFO - middleware.py:24 - [tool monitor]工具predict_electricity_price调用成功
+2026-04-18 11:19:36,075 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有3条消息。
+2026-04-18 11:19:36,075 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 【预测结果】根据自研时序预测模型深度测算，明天 的全天平均预测电价为：0.3505 元/度。建议结合最新电价政策进行交易决策。
+2026-04-18 11:27:38,735 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有1条消息。
+2026-04-18 11:27:38,735 - agent - DEBUG - middleware.py:42 - [log_before_model]HumanMessage | 结合最新的电价政策，帮我预测一下明天的电价走势
+2026-04-18 11:27:48,443 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：predict_electricity_price
+2026-04-18 11:27:48,444 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'target_date': '明天'}
+2026-04-18 11:27:48,445 - agent - INFO - agent_tools.py:20 - 💡 Agent 聪明地触发了底层的电价预测模型！正在计算 明天 的数据...
+2026-04-18 11:27:48,445 - agent - INFO - middleware.py:24 - [tool monitor]工具predict_electricity_price调用成功
+2026-04-18 11:27:49,145 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有3条消息。
+2026-04-18 11:27:49,147 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 【预测结果】根据自研时序预测模型深度测算，明天 的全天平均预测电价为：0.5453 元/度。建议结合最新电价政策进行交易决策。
+2026-04-18 11:51:34,771 - agent - WARNING - vector_store.py:38 - 知识库文本为空，将回退到基础向量检索。请先运行 load_document()
+2026-04-18 11:51:46,527 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有1条消息。
+2026-04-18 11:51:46,527 - agent - DEBUG - middleware.py:42 - [log_before_model]HumanMessage | 帮我预测一下明天的电价
+2026-04-18 11:51:49,704 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：predict_electricity_price
+2026-04-18 11:51:49,705 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'target_date': '明天'}
+2026-04-18 11:51:49,706 - agent - INFO - agent_tools.py:24 - 💡 Agent 聪明地触发了底层的电价预测模型！正在计算 明天 的数据...
+2026-04-18 11:51:49,707 - agent - INFO - middleware.py:24 - [tool monitor]工具predict_electricity_price调用成功
+2026-04-18 11:51:50,413 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有3条消息。
+2026-04-18 11:51:50,414 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 【预测结果】根据自研时序预测模型深度测算，明天 的全天平均预测电价为：0.5685 元/度。建议结合最新电价政策进行交易决策。
+2026-04-18 11:53:09,085 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有1条消息。
+2026-04-18 11:53:09,086 - agent - DEBUG - middleware.py:42 - [log_before_model]HumanMessage | 后一天呢
+2026-04-18 11:53:10,446 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：predict_electricity_price
+2026-04-18 11:53:10,447 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'target_date': '后一天'}
+2026-04-18 11:53:10,447 - agent - INFO - agent_tools.py:24 - 💡 Agent 聪明地触发了底层的电价预测模型！正在计算 后一天 的数据...
+2026-04-18 11:53:10,448 - agent - INFO - middleware.py:24 - [tool monitor]工具predict_electricity_price调用成功
+2026-04-18 11:53:11,160 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有3条消息。
+2026-04-18 11:53:11,160 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 【预测结果】根据自研时序预测模型深度测算，后一天 的全天平均预测电价为：0.5183 元/度。建议结合最新电价政策进行交易决策。
+2026-04-18 11:58:46,151 - agent - WARNING - vector_store.py:38 - 知识库文本为空，将回退到基础向量检索。请先运行 load_document()
+2026-04-18 11:58:56,269 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有1条消息。
+2026-04-18 11:58:56,270 - agent - DEBUG - middleware.py:42 - [log_before_model]HumanMessage | 预测一下明天的电价
+2026-04-18 11:58:59,567 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：predict_electricity_price
+2026-04-18 11:58:59,567 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'target_date': '明天'}
+2026-04-18 11:58:59,568 - agent - INFO - agent_tools.py:30 - 💡 Agent 聪明地触发了底层的电价预测模型！正在计算 明天 的数据...
+2026-04-18 11:58:59,568 - agent - INFO - middleware.py:24 - [tool monitor]工具predict_electricity_price调用成功
+2026-04-18 11:59:00,267 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有3条消息。
+2026-04-18 11:59:00,267 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 【预测结果】根据自研时序预测模型深度测算，明天 的全天平均预测电价为：0.3711 元/度。建议结合最新电价政策进行交易决策。
+2026-04-18 11:59:03,510 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：rag_summarize
+2026-04-18 11:59:03,511 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'query': '分时电价政策'}
+2026-04-18 11:59:03,787 - agent - ERROR - middleware.py:31 - 工具rag_summarize调用失败，原因："Input to PromptTemplate is missing variables {'query'}.  Expected: ['context', 'query'] Received: ['input', 'context']\nNote: if you intended {query} to be part of the string and not a variable, please escape it with double curly braces like: '{{query}}'.\nFor troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/INVALID_PROMPT_INPUT "
+2026-04-18 12:00:52,101 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有1条消息。
+2026-04-18 12:00:52,102 - agent - DEBUG - middleware.py:42 - [log_before_model]HumanMessage | 预测明天电价
+2026-04-18 12:00:56,728 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：predict_electricity_price
+2026-04-18 12:00:56,728 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'target_date': '明天'}
+2026-04-18 12:00:56,728 - agent - INFO - agent_tools.py:30 - 💡 Agent 聪明地触发了底层的电价预测模型！正在计算 明天 的数据...
+2026-04-18 12:00:56,729 - agent - INFO - middleware.py:24 - [tool monitor]工具predict_electricity_price调用成功
+2026-04-18 12:00:57,424 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有3条消息。
+2026-04-18 12:00:57,424 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 【预测结果】根据自研时序预测模型深度测算，明天 的全天平均预测电价为：0.6341 元/度。建议结合最新电价政策进行交易决策。
+2026-04-18 12:01:00,969 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：rag_summarize
+2026-04-18 12:01:00,969 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'query': '分时电价政策'}
+2026-04-18 12:01:01,239 - agent - ERROR - middleware.py:31 - 工具rag_summarize调用失败，原因："Input to PromptTemplate is missing variables {'query'}.  Expected: ['context', 'query'] Received: ['input', 'context']\nNote: if you intended {query} to be part of the string and not a variable, please escape it with double curly braces like: '{{query}}'.\nFor troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/INVALID_PROMPT_INPUT "
+2026-04-18 13:09:03,726 - agent - WARNING - vector_store.py:38 - 知识库文本为空，将回退到基础向量检索。请先运行 load_document()
+2026-04-18 13:09:15,413 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有1条消息。
+2026-04-18 13:09:15,414 - agent - DEBUG - middleware.py:42 - [log_before_model]HumanMessage | 预测一下明天的电价
+2026-04-18 13:09:19,432 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：predict_electricity_price
+2026-04-18 13:09:19,432 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'target_date': '明天'}
+2026-04-18 13:09:19,433 - agent - INFO - agent_tools.py:30 - 💡 Agent 聪明地触发了底层的电价预测模型！正在计算 明天 的数据...
+2026-04-18 13:09:19,433 - agent - INFO - middleware.py:24 - [tool monitor]工具predict_electricity_price调用成功
+2026-04-18 13:09:20,143 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有3条消息。
+2026-04-18 13:09:20,144 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 【预测结果】根据自研时序预测模型深度测算，明天 的全天平均预测电价为：0.5898 元/度。建议结合最新电价政策进行交易决策。
+2026-04-18 13:09:25,716 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：rag_summarize
+2026-04-18 13:09:25,717 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'query': '分时电价政策'}
+2026-04-18 13:09:27,268 - agent - INFO - middleware.py:24 - [tool monitor]工具rag_summarize调用成功
+2026-04-18 13:09:27,591 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有5条消息。
+2026-04-18 13:09:27,591 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 当前的知识库中暂未收录与该问题相关的电力政策或规则说明。
+2026-04-18 13:15:11,106 - agent - WARNING - vector_store.py:38 - 知识库文本为空，将回退到基础向量检索。请先运行 load_document()
+2026-04-18 13:15:20,567 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有1条消息。
+2026-04-18 13:15:20,567 - agent - DEBUG - middleware.py:42 - [log_before_model]HumanMessage | 预测明天电价
+2026-04-18 13:15:25,645 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：predict_electricity_price
+2026-04-18 13:15:25,646 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'target_date': '明天'}
+2026-04-18 13:15:25,647 - agent - INFO - agent_tools.py:30 - 💡 Agent 聪明地触发了底层的电价预测模型！正在计算 明天 的数据...
+2026-04-18 13:15:25,647 - agent - INFO - middleware.py:24 - [tool monitor]工具predict_electricity_price调用成功
+2026-04-18 13:15:26,352 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有3条消息。
+2026-04-18 13:15:26,353 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 【预测结果】根据自研时序预测模型深度测算，明天 的全天平均预测电价为：0.4003 元/度。建议结合最新电价政策进行交易决策。
+2026-04-18 13:15:30,467 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：rag_summarize
+2026-04-18 13:15:30,468 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'query': '分时电价政策'}
+2026-04-18 13:15:31,925 - agent - INFO - middleware.py:24 - [tool monitor]工具rag_summarize调用成功
+2026-04-18 13:15:32,246 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有5条消息。
+2026-04-18 13:15:32,248 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 当前的知识库中暂未收录与该问题相关的电力政策或规则说明。
+2026-04-18 13:15:56,766 - agent - WARNING - vector_store.py:38 - 知识库文本为空，将回退到基础向量检索。请先运行 load_document()
+2026-04-18 13:16:14,526 - agent - WARNING - vector_store.py:38 - 知识库文本为空，将回退到基础向量检索。请先运行 load_document()
+2026-04-18 15:46:33,515 - agent - WARNING - vector_store.py:38 - 知识库文本为空，将回退到基础向量检索。请先运行 load_document()
+2026-04-18 15:47:52,955 - agent - WARNING - vector_store.py:38 - 知识库文本为空，将回退到基础向量检索。请先运行 load_document()
+2026-04-18 15:47:53,086 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有1条消息。
+2026-04-18 15:47:53,086 - agent - DEBUG - middleware.py:42 - [log_before_model]HumanMessage | 预测一下明天的电价
+2026-04-18 15:47:58,102 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：predict_electricity_price
+2026-04-18 15:47:58,102 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'target_date': '明天'}
+2026-04-18 15:47:58,106 - agent - INFO - agent_tools.py:43 - 💡 Agent 正在调动底层的 LSTM 神经网络！开始计算 明天 的电力张量数据...
+2026-04-18 15:47:58,125 - agent - INFO - middleware.py:24 - [tool monitor]工具predict_electricity_price调用成功
+2026-04-18 15:47:58,904 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有3条消息。
+2026-04-18 15:47:58,905 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 【预测结果】根据自研 LSTM 时序预测模型推演，明天 的预测加权平均电价为：51.2737 $/MWh。建议结合最新电价政策进行交易决策。
+2026-04-18 15:48:02,175 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：rag_summarize
+2026-04-18 15:48:02,176 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'query': '分时电价政策'}
+2026-04-18 15:48:03,470 - agent - INFO - middleware.py:24 - [tool monitor]工具rag_summarize调用成功
+2026-04-18 15:48:03,789 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有5条消息。
+2026-04-18 15:48:03,789 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 当前的知识库中暂未收录与该问题相关的电力政策或规则说明。
+2026-04-18 16:40:04,352 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有1条消息。
+2026-04-18 16:40:04,352 - agent - DEBUG - middleware.py:42 - [log_before_model]HumanMessage | 预测一下后天的
+2026-04-18 16:40:09,855 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：predict_electricity_price
+2026-04-18 16:40:09,855 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'target_date': '后天'}
+2026-04-18 16:40:09,856 - agent - INFO - agent_tools.py:43 - 💡 Agent 正在调动底层的 LSTM 神经网络！开始计算 后天 的电力张量数据...
+2026-04-18 16:40:09,867 - agent - INFO - middleware.py:24 - [tool monitor]工具predict_electricity_price调用成功
+2026-04-18 16:40:10,647 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有3条消息。
+2026-04-18 16:40:10,647 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 【预测结果】根据自研 LSTM 时序预测模型推演，后天 的预测加权平均电价为：51.2737 $/MWh。建议结合最新电价政策进行交易决策。
+2026-04-18 16:40:14,774 - agent - INFO - middleware.py:19 - [tool monitor]执行工具：rag_summarize
+2026-04-18 16:40:14,774 - agent - INFO - middleware.py:20 - [tool monitor]传入参数：{'query': '分时电价政策'}
+2026-04-18 16:40:16,540 - agent - INFO - middleware.py:24 - [tool monitor]工具rag_summarize调用成功
+2026-04-18 16:40:16,858 - agent - INFO - middleware.py:40 - [log_before_model]即将调用模型，带有5条消息。
+2026-04-18 16:40:16,859 - agent - DEBUG - middleware.py:42 - [log_before_model]ToolMessage | 当前的知识库中暂未收录与该问题相关的电力政策或规则说明。

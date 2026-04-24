@@ -1,0 +1,3 @@
+2026-04-20 17:50:12,109 - agent - INFO - vector_store.py:128 - [加载知识库]D:\python\project\Agent项目\data\2025及2026北美电力交易策略与政策.txt 内容加载成功
+2026-04-20 17:50:39,893 - agent - INFO - vector_store.py:128 - [加载知识库]D:\python\project\Agent项目\data\电价预测模型发展及综述.pdf 内容加载成功
+2026-04-20 17:51:08,640 - agent - INFO - vector_store.py:128 - [加载知识库]D:\python\project\Agent项目\data\电力市场电价预测方法综述 (4).pdf 内容加载成功

@@ -1,0 +1,18 @@
+# 1. 忽略 Python 缓存文件
+__pycache__/
+*.py[cod]
+
+# 2. 忽略环境配置和密钥（千万别把大模型的 API Key 泄露出去！）
+.env
+.idea/
+.vscode/
+
+# 3. 忽略庞大的向量数据库缓存
+rag/chroma_db/
+
+# 4. 忽略庞大的原始数据集（只传代码，数据让别人自己下）
+datasets/*.xlsx
+datasets/*.csv
+
+# 5. 忽略本地训练的模型权重（可选：如果你想连着权重一起开源，这行可以不写，但文件不能超过 100MB）
+algorithms/*.pth

@@ -2,7 +2,7 @@ import os
 import hashlib
 from utils.logger_handler import logger
 from langchain_core.documents import Document
-from langchain_community.document_loaders import PyPDFLoader, TextLoader
+from langchain_community.document_loaders import PyPDFLoader, TextLoader, Docx2txtLoader
 
 
 def get_file_md5_hex(filepath: str):  # 获取文件的md5的十六进制字符串
@@ -37,16 +37,17 @@ def get_file_md5_hex(filepath: str):  # 获取文件的md5的十六进制字符�
         return None
 
 
-def listdir_with_allowed_type(path: str, allowed_types: tuple[str]):  # 返回文件夹内的文件列表（允许的文件后缀）
+def listdir_with_allowed_type(path: str, allowed_types: tuple[str]):  # 返回文件夹内的文件列表（允许的文件后缀，递归子目录）
     files = []
 
     if not os.path.isdir(path):
         logger.error(f"[listdir_with_allowed_type]{path}不是文件夹")
-        return allowed_types
+        return tuple(files)
 
-    for f in os.listdir(path):
-        if f.endswith(allowed_types):
-            files.append(os.path.join(path, f))
+    for root, _dirs, filenames in os.walk(path):
+        for f in filenames:
+            if f.endswith(allowed_types):
+                files.append(os.path.join(root, f))
 
     return tuple(files)
 
@@ -57,3 +58,12 @@ def pdf_loader(filepath: str, passwd=None) -> list[Document]:
 
 def txt_loader(filepath: str) -> list[Document]:
     return TextLoader(filepath, encoding="utf-8").load()
+
+def docx_loader(filepath: str):
+    """Load .docx or .doc files using python-docx (already in requirements)."""
+    from docx import Document as DocxDocument
+    doc = DocxDocument(filepath)
+    text = "\n".join(p.text for p in doc.paragraphs if p.text.strip())
+    if not text:
+        return []
+    return [Document(page_content=text, metadata={"source": filepath})]

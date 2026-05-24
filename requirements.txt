@@ -429,3 +429,9 @@ zict @ file:///C:/Users/dev-admin/perseverance-python-buildout/croot/zict_169954
 zipp @ file:///C:/Users/dev-admin/perseverance-python-buildout/croot/zipp_1707493775475/work
 zope.interface @ file:///C:/Users/dev-admin/perseverance-python-buildout/croot/zope.interface_1699497164709/work
 zstandard @ file:///C:/miniconda3/conda-bld/zstandard_1758189092262/work
+
+# 电价预测 Chronos 轨道（LangGraph / agent_tools）
+chronos-forecasting==2.2.2
+
+# MISO 等市场实时/终版 LMP（GRIDSTATUS_ENABLED=1 时使用）
+gridstatus>=0.36.0

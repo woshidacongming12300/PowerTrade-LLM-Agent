@@ -1,0 +1,56 @@
+/* ============================================================
+   Electricity Price Intelligence — Custom Styles
+   ============================================================ */
+
+/* ---- CSS Variables Override ---- */
+:root {
+  --sidebar-width: 320px;
+  --chat-max-width: 900px;
+}
+
+/* ---- Element Sidebar (right panel) ---- */
+.element-sidebar {
+  min-width: 280px;
+  max-width: 320px;
+}
+
+.element-sidebar .element-sidebar__title {
+  color: var(--chakra-colors-gray-300);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+/* ---- Status indicator dots ---- */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.status-dot--green  { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+.status-dot--yellow { background: #eab308; box-shadow: 0 0 6px rgba(234,179,8,0.5); }
+.status-dot--red    { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+
+/* ---- Chat messages ---- */
+.msg-welcome {
+  border-left: 2px solid #6366f1;
+  padding-left: 1rem;
+}
+
+/* ---- Starters area ---- */
+.starters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+/* ---- Smooth transitions ---- */
+a, button, .clickable {
+  transition: all 0.2s ease;
+}

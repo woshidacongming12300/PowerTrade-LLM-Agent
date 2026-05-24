@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  epf-agent:
+    build: .
+    container_name: epf-agent
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - GRIDSTATUS_ENABLED=${GRIDSTATUS_ENABLED:-0}
+      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY:-}
+      - AGENT_CHROMA_PERSIST_DIR=/opt/epf-agent/chroma_db_v2
+    volumes:
+      # Persist ChromaDB vector store across container restarts
+      - chroma_data:/opt/epf-agent/chroma_db_v2
+      # Mount data directory for CSV updates (optional)
+      - ./data:/opt/epf-agent/data:ro
+      # Mount model files for persistence
+      - ./algorithms/lstm_epf.pth:/opt/epf-agent/algorithms/lstm_epf.pth
+      - ./algorithms/lstm_epf_multivariate.pth:/opt/epf-agent/algorithms/lstm_epf_multivariate.pth
+      - ./algorithms/merged_price_weather.csv:/opt/epf-agent/algorithms/merged_price_weather.csv
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Optional: Streamlit alternative on port 8501
+  epf-streamlit:
+    build: .
+    container_name: epf-streamlit
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    environment:
+      - GRIDSTATUS_ENABLED=${GRIDSTATUS_ENABLED:-0}
+      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY:-}
+    volumes:
+      - chroma_data:/opt/epf-agent/chroma_db_v2
+      - ./data:/opt/epf-agent/data:ro
+      - ./algorithms/lstm_epf.pth:/opt/epf-agent/algorithms/lstm_epf.pth
+      - ./algorithms/lstm_epf_multivariate.pth:/opt/epf-agent/algorithms/lstm_epf_multivariate.pth
+      - ./algorithms/merged_price_weather.csv:/opt/epf-agent/algorithms/merged_price_weather.csv
+    command: ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+    profiles:
+      - full
+
+volumes:
+  chroma_data:
+    driver: local

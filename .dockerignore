@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ChromaDB (will be re-created in container volume)
+chroma_db/
+chroma_db_v2/
+*.sqlite3
+
+# Model (trained during build if not present)
+# algorithms/lstm_epf.pth — keep in image
+
+# Logs
+*.log
+logs/
+
+# Sensitive
+.env
+*.pem
+credentials.json
+
+# Node (if any)
+node_modules/
+
+# Test & scripts (not needed at runtime)
+scripts/
+tests/
+__test__/
+
+# Documentation
+*.md
+!CLAUDE.md
+
+# Data files (mounted as volume, don't copy into image)
+data/

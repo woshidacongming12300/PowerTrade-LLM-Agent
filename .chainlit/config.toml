@@ -1,0 +1,15 @@
+[project]
+name = "Electricity Price Intelligence"
+
+[features]
+spontaneous_file_upload = { enabled = false }
+
+[UI]
+name = "Electricity Price Intelligence"
+description = "Multi-Agent: LSTM + Chronos-T5 + Hybrid RAG"
+default_theme = "dark"
+layout = "wide"
+default_collapse_content = true
+
+[meta]
+generated_by = "2.0.0"

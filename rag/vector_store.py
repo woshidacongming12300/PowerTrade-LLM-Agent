@@ -6,9 +6,32 @@ from utils.config_handler import chroma_conf
 from model.factory import embed_model
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from utils.path_tool import get_abs_path
-from utils.file_handler import pdf_loader, txt_loader, listdir_with_allowed_type, get_file_md5_hex
+from utils.file_handler import pdf_loader, txt_loader,docx_loader, listdir_with_allowed_type, get_file_md5_hex
 from utils.logger_handler import logger
 import os
+
+
+def _chroma_persist_directory() -> str:
+    """Chroma 1.x 在 Windows 上对含非 ASCII 的持久化路径可能出现 HNSW 读写失败，故自动回退到英文路径。"""
+    override = (os.environ.get("AGENT_CHROMA_PERSIST_DIR") or "").strip()
+    if override:
+        os.makedirs(override, exist_ok=True)
+        return override
+
+    candidate = get_abs_path(chroma_conf["persist_directory"])
+    try:
+        candidate.encode("ascii")
+    except UnicodeEncodeError:
+        base = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
+        safe = os.path.join(base, "agent_chroma_persist", chroma_conf["collection_name"])
+        os.makedirs(safe, exist_ok=True)
+        logger.warning(
+            "项目路径含非 ASCII 字符时，Chroma 在 Windows 下易出现 HNSW 持久化异常；"
+            "向量库已改存到 %s 。可通过环境变量 AGENT_CHROMA_PERSIST_DIR 覆盖。",
+            safe,
+        )
+        return safe
+    return candidate
 
 
 class VectorStoreService:
@@ -16,7 +39,7 @@ class VectorStoreService:
         self.vector_store = Chroma(
             collection_name=chroma_conf["collection_name"],
             embedding_function=embed_model,
-            persist_directory=chroma_conf["persist_directory"],
+            persist_directory=_chroma_persist_directory(),
         )
 
         self.spliter = RecursiveCharacterTextSplitter(
@@ -31,8 +54,17 @@ class VectorStoreService:
         vector_retriever = self.vector_store.as_retriever(search_kwargs={"k": chroma_conf["k"]})
 
         # 2. 提取数据库中已有的文本，用于构建 BM25
-        db_data = self.vector_store.get()
-        all_texts = db_data.get('documents', [])
+        try:
+            db_data = self.vector_store.get()
+        except Exception as e:
+            logger.error(
+                "Chroma 全量读取失败（常见于 HNSW 索引损坏或与 chromadb 版本不兼容），"
+                "已降级为仅向量检索。请备份后删除 persist 目录并重新执行 load_document。原因: %s",
+                e,
+            )
+            return vector_retriever
+
+        all_texts = (db_data or {}).get("documents") or []
 
         if not all_texts:
             logger.warning("知识库文本为空，将回退到基础向量检索。请先运行 load_document()")
@@ -101,6 +133,19 @@ class VectorStoreService:
                 return txt_loader(read_path)
             if read_path.endswith("pdf"):
                 return pdf_loader(read_path)
+            if read_path.endswith(("docx", "doc")):
+                try:
+                    return docx_loader(read_path)
+                except Exception:
+                    logger.warning(f"[加载知识库]{read_path} 为旧版 .doc 格式，尝试 textract 解析...")
+                    try:
+                        import textract
+                        text = textract.process(read_path).decode("utf-8")
+                        from langchain_core.documents import Document
+                        return [Document(page_content=text, metadata={"source": read_path})]
+                    except Exception:
+                        logger.warning(f"[加载知识库]{read_path} .doc 解析失败，跳过")
+                        return []
             return []
 
         allowed_files_path: list[str] = listdir_with_allowed_type(
@@ -123,7 +168,13 @@ class VectorStoreService:
                 if not split_document:
                     continue
 
-                self.vector_store.add_documents(split_document)
+                    # 工业级 RAG 防爆切片逻辑：应对 ChromaDB 的 5461 限制
+                batch_size = 5000
+                for i in range(0, len(split_document), batch_size):
+                    batch = split_document[i:i + batch_size]
+                    self.vector_store.add_documents(batch)
+                    print(f"   [OK] Wrote {len(batch)} chunks to ChromaDB")
+
                 save_md5_hex(md5_hex)
                 logger.info(f"[加载知识库]{path} 内容加载成功")
             except Exception as e:

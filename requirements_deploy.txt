@@ -1,0 +1,50 @@
+# ============================================================
+# Electricity Price Intelligence — Production Requirements
+# ============================================================
+# Install: pip install -r requirements_deploy.txt
+# For CPU-only torch (recommended for servers):
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+# Then: pip install -r requirements_deploy.txt
+
+# --- ML / Numerical ---
+numpy>=1.26
+pandas>=2.2
+scikit-learn>=1.8
+
+# --- LangChain / LangGraph ---
+langchain>=1.2
+langchain-core>=1.2
+langchain-community>=0.4
+langchain-chroma>=1.1
+langchain-text-splitters>=1.1
+langgraph>=1.1
+langgraph-checkpoint>=4.0
+
+# --- LLM (Tongyi / DashScope) ---
+dashscope>=1.20
+
+# --- Frontend ---
+chainlit>=2.11
+python-dotenv>=1.0
+streamlit>=1.52
+plotly>=6.7
+
+# --- Vector DB & Retrieval ---
+chromadb>=1.5
+rank-bm25>=0.2
+
+# --- Data Fetching (MISO real-time) ---
+gridstatus>=0.36
+
+# --- Document Parsing (for RAG knowledge base) ---
+python-docx>=1.2
+pypdf>=6.10
+
+# --- Data Persistence (Chainlit conversation history) ---
+sqlalchemy>=2.0
+aiosqlite>=0.22
+
+# --- Utilities ---
+pyyaml>=6.0
+httpx>=0.28
+aiohttp>=3.13

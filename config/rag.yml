@@ -1,2 +1,2 @@
-chat_model_name: deepseek-v4-pro
-embedding_model_name: text-embedding-v4
+chat_model_name: qwen3.7-flash-2026-07-15
+embedding_model_name: qwen3.7-text-embedding

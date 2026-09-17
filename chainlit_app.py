@@ -182,6 +182,7 @@ async def on_chat_start():
                 "LangGraph Agent (Dynamic)": "langgraph",
                 "Plan-Execute Agent (Structured)": "plan_execute",
                 "ReAct Agent (Quick Chat)": "react",
+                "Supervisor Agent (Multi-Agent)": "supervisor",
             },
             initial_value="langgraph",
         ),
@@ -196,6 +197,7 @@ async def on_chat_start():
         "langgraph": "LangGraph Agent (Dynamic + Reflection)",
         "plan_execute": "Plan-Execute Agent (Structured)",
         "react": "ReAct Agent (Quick Chat)",
+        "supervisor": "Supervisor Agent (Multi-Agent)",
     }
     mode_label = mode_labels.get(mode, "LangGraph Agent (Dynamic)")
     welcome = (
@@ -266,6 +268,7 @@ async def on_settings_update(settings):
             "langgraph": "LangGraph Agent (Dynamic)",
             "plan_execute": "Plan-Execute Agent (Structured)",
             "react": "ReAct Agent (Quick Chat)",
+            "supervisor": "Supervisor Agent (Multi-Agent)",
         }
         mode_label = mode_labels.get(mode, "LangGraph Agent (Dynamic)")
         msg = (
@@ -476,6 +479,50 @@ async def run_plan_execute(message: cl.Message, lang: str):
 
 
 # ============================================================
+# Supervisor Multi-Agent
+# ============================================================
+async def run_supervisor_chainlit(message: cl.Message, lang: str):
+    """Run the supervisor multi-agent flow with step-by-step rendering.
+
+    Shows: Coordinator routing decision -> specialist agent -> final synthesis.
+    """
+    from agent.supervisor_agent import run_supervisor
+    from memory.service import MemoryService
+
+    query = message.content
+    user_id = message.author if message.author else "default"
+
+    # Extract & persist user preferences from this message (long-term memory).
+    memory = MemoryService(user_id)
+    prefs_found = memory.extract_and_store(query)
+
+    async with cl.Step(name="🧠 Supervisor", type="tool") as parent:
+        parent.output = "Coordinator 正在路由..."
+        await parent.update()
+
+        final_response = await asyncio.get_event_loop().run_in_executor(
+            None, run_supervisor, query
+        )
+
+        parent.output = "✅ 综合完成"
+        await parent.update()
+
+    if final_response:
+        await cl.Message(content=final_response).send()
+
+    # Show what long-term memory learned (observability touch).
+    prefs = memory.preferences()
+    if prefs:
+        pref_lines = ", ".join(f"{k}={v}" for k, v in prefs.items())
+        await cl.Message(
+            content=f"🧠 **长期记忆已更新**: {pref_lines}\n"
+                    f"（跨会话记住你的偏好，切换模式后依然生效）",
+        ).send()
+
+    return final_response
+
+
+# ============================================================
 # Main message handler
 # ============================================================
 @cl.on_message
@@ -493,6 +540,10 @@ async def on_message(message: cl.Message):
             history.append({"role": "assistant", "content": assistant_content[:300]})
     elif mode == "plan_execute":
         assistant_content = await run_plan_execute(message, lang)
+        if assistant_content:
+            history.append({"role": "assistant", "content": assistant_content[:300]})
+    elif mode == "supervisor":
+        assistant_content = await run_supervisor_chainlit(message, lang)
         if assistant_content:
             history.append({"role": "assistant", "content": assistant_content[:300]})
     else:

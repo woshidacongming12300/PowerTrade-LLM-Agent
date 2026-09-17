@@ -4,8 +4,15 @@ import sys
 from getpass import getpass
 from paramiko import SSHClient, AutoAddPolicy, RSAKey
 
-HOST = os.environ.get("EPF_SERVER", "150.158.150.98")
+HOST = os.environ.get("EPF_SERVER", "").strip()
 USER = os.environ.get("EPF_USER", "ubuntu")
+
+if not HOST:
+    print("目标服务器未配置。请先设置环境变量：")
+    print("  Windows:  set EPF_SERVER=<服务器地址或 IP>")
+    print("  Linux:    export EPF_SERVER=<服务器地址或 IP>")
+    print("可选：EPF_USER（默认 ubuntu）")
+    sys.exit(1)
 
 # Find SSH key
 pkey = None
@@ -76,7 +83,7 @@ if err:
     print("STDERR:", err[-300:] if len(err) > 300 else err)
 
 if "RESTART_OK" in out:
-    print("\n[DONE] Server updated! Open http://150.158.150.98 and press Ctrl+F5")
+    print(f"\n[DONE] Server updated! Open http://{HOST} and press Ctrl+F5")
 else:
     print("\n[FAIL] Something went wrong. Check the output above.")
 

@@ -5,7 +5,7 @@ if _project_root not in sys.path:
 
 from langchain.agents import create_agent
 from model.factory import chat_model
-from utils.prompt_loader import load_system_prompts
+from utils.prompt_loader import load_react_prompts
 from agent.tools.agent_tools import (
     forecast_electricity_prices,
     predict_electricity_price,
@@ -25,7 +25,7 @@ class ReactAgent:
     def __init__(self):
         self.agent = create_agent(
             model=chat_model,
-            system_prompt=load_system_prompts(),
+            system_prompt=load_react_prompts(),
             tools=[
                 get_current_date,
                 predict_electricity_price,

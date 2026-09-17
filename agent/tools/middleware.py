@@ -1,5 +1,5 @@
 from typing import Callable
-from utils.prompt_loader import load_system_prompts, load_report_prompts
+from utils.prompt_loader import load_react_prompts, load_report_prompts
 from langchain.agents import AgentState
 from langchain.agents.middleware import wrap_tool_call, before_model, dynamic_prompt, ModelRequest
 from langchain.tools.tool_node import ToolCallRequest
@@ -50,4 +50,6 @@ def report_prompt_switch(request: ModelRequest):     # 动态切换提示词
     if is_report:               # 是报告生成场景，返回报告生成提示词内容
         return load_report_prompts()
 
-    return load_system_prompts()
+    # 默认返回 ReAct 专用提示词（不再误用 main_prompt.txt 的"专家路由"提示词，
+    # 那会导致 ReAct agent 输出 {'next_node': ...} 决策 JSON 而非真正的工具调用）。
+    return load_react_prompts()

@@ -47,7 +47,7 @@ TOOLS = [
 ]
 TOOL_BY_NAME = {t.name: t for t in TOOLS}
 
-PLANNER_PROMPT = f"""You are an electricity market AI planner. Today is {_date_today.today().isoformat()}. Given a user query, decompose it into a sequence of concrete subtasks.
+PLANNER_PROMPT = """You are an electricity market AI planner. Today is {today}. Given a user query, decompose it into a sequence of concrete subtasks.
 
 Available tools:
 - get_current_date: Get today's date.
@@ -70,22 +70,22 @@ Rules:
 
 Example for "生成未来一周的电价简报":
 [
-  {{{{step": 1, "description": "获取ERCOT天气和7日预报", "tool": "get_texas_weather", "input": "forecast 7天 ERCOT"}},
-  {{{{step": 2, "description": "预测未来一周每日电价", "tool": "forecast_electricity_prices", "input": "7天后"}},
-  {{{{step": 3, "description": "检索电力市场政策背景", "tool": "rag_summarize", "input": "ERCOT电力市场定价机制和近期政策"}},
-  {{{{step": 4, "description": "综合所有结果生成简报", "tool": "synthesize", "input": ""}}
+  {{"step": 1, "description": "获取ERCOT天气和7日预报", "tool": "get_texas_weather", "input": "forecast 7天 ERCOT"}},
+  {{"step": 2, "description": "预测未来一周每日电价", "tool": "forecast_electricity_prices", "input": "7天后"}},
+  {{"step": 3, "description": "检索电力市场政策背景", "tool": "rag_summarize", "input": "ERCOT电力市场定价机制和近期政策"}},
+  {{"step": 4, "description": "综合所有结果生成简报", "tool": "synthesize", "input": ""}}
 ]
 
-User query: {{user_query}}
+User query: {user_query}
 
 Output ONLY the JSON array, nothing else."""
 
-SYNTHESIZE_PROMPT = f"""You are an electricity market intelligence analyst. Today is {_date_today.today().isoformat()}. Synthesize the following execution results into a comprehensive, well-structured response.
+SYNTHESIZE_PROMPT = """You are an electricity market intelligence analyst. Today is {today}. Synthesize the following execution results into a comprehensive, well-structured response.
 
-User query: {{user_query}}
+User query: {user_query}
 
 Execution results:
-{{execution_log}}
+{execution_log}
 
 Rules:
 1. Use the SAME language as the user query.
@@ -132,7 +132,9 @@ def plan_node(state: PlanExecuteState):
             user_query = m.content
             break
 
-    prompt = PLANNER_PROMPT.format(user_query=user_query)
+    prompt = PLANNER_PROMPT.format(
+        today=_date_today.today().isoformat(), user_query=user_query
+    )
     response = chat_model.invoke(prompt)
     plan = _parse_plan(response.content)
 
@@ -202,7 +204,11 @@ def synthesize_node(state: PlanExecuteState):
         )
     execution_log = "\n\n".join(execution_log_parts)
 
-    prompt = SYNTHESIZE_PROMPT.format(user_query=user_query, execution_log=execution_log)
+    prompt = SYNTHESIZE_PROMPT.format(
+        today=_date_today.today().isoformat(),
+        user_query=user_query,
+        execution_log=execution_log,
+    )
     response = chat_model.invoke(prompt)
 
     return {"messages": [AIMessage(content=response.content)]}

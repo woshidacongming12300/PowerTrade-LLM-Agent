@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch: # allow manual runs
+
+jobs:
+  # ---------------------------------------------------------------
+  # Unit + integration tests (no credentials needed; live-model tests
+  # are auto-skipped via pytest markers when DASHSCOPE_API_KEY is absent)
+  # ---------------------------------------------------------------
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest -q
+          pip install -r requirements.txt -q
+
+      - name: Run test suite
+        env:
+          HF_HUB_OFFLINE: "1" # never let CI hang on HuggingFace downloads
+        run: python -m pytest -v
+
+  # ---------------------------------------------------------------
+  # Agent evaluation smoke test — runs only when DashScope credentials
+  # are provided as repo secrets (DASHSCOPE_API_KEY).
+  # ---------------------------------------------------------------
+  eval:
+    runs-on: ubuntu-latest
+    needs: test
+    if: ${{ secrets.DASHSCOPE_API_KEY != '' }}
+    env:
+      DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
+      HF_HUB_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -q
+
+      - name: Run agent evaluation (quick, no judge)
+        run: python -u eval/run_eval.py --quick --no-judge --timeout 150
+
+      - name: Upload evaluation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval_report
+          path: eval_report.md
+
+  # ---------------------------------------------------------------
+  # Lightweight sanity checks: Python syntax + import smoke
+  # ---------------------------------------------------------------
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile all modules
+        run: |
+          python -m compileall -q api agent algorithms eval memory model observability rag utils

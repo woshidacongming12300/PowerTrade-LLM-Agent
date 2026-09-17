@@ -14,9 +14,16 @@ except ImportError:
     print("paramiko not installed. Run: pip install paramiko")
     sys.exit(1)
 
-SERVER = os.environ.get("EPF_SERVER", "150.158.150.98")
+SERVER = os.environ.get("EPF_SERVER", "").strip()
 USER = os.environ.get("EPF_USER", "ubuntu")
 REMOTE_BASE = "/opt/epf-agent"
+
+if not SERVER:
+    print("目标服务器未配置。请先设置环境变量：")
+    print("  Windows:  set EPF_SERVER=<服务器地址或 IP>")
+    print("  Linux:    export EPF_SERVER=<服务器地址或 IP>")
+    print("可选：EPF_USER（默认 ubuntu）")
+    sys.exit(1)
 
 # Auto-discover all project files (exclude .git, venv, __pycache__, .idea, etc.)
 EXCLUDE_DIRS = {'.git', 'venv', '__pycache__', '.idea', '.claude', 'node_modules',
@@ -117,7 +124,7 @@ def main():
         print(err)
 
     ssh.close()
-    print("Done. Visit http://150.158.150.98")
+    print(f"Done. Visit http://{SERVER}")
 
 
 if __name__ == "__main__":

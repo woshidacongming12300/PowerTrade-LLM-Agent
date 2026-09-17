@@ -9,7 +9,13 @@ REM   3. Trigger: Weekly, Monday, 8:00 AM
 REM   4. Action: Start a program → Browse to this .bat file
 REM   5. Finish
 
-set PROJECT_DIR=d:\python\project\Agent Project
+REM Project root: defaults to this script's parent folder.
+REM Override with the EPF_PROJECT_DIR environment variable if needed.
+if "%EPF_PROJECT_DIR%"=="" (
+    set PROJECT_DIR=%~dp0..
+) else (
+    set PROJECT_DIR=%EPF_PROJECT_DIR%
+)
 set LOG_FILE=%PROJECT_DIR%\logs\weekly_update.log
 
 echo ============================================ >> %LOG_FILE%

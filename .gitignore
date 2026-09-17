@@ -1,9 +1,12 @@
 # Python cache
 __pycache__/
 *.py[cod]
+.pytest_cache/
+*.egg-info/
 
 # Environment & secrets
 .env
+.env.local
 
 # IDE
 .idea/
@@ -13,16 +16,28 @@ __pycache__/
 .claude/
 .files/
 
+# Agent runtime artifacts (regeneratable — never commit)
+# NOTE: gitignore does NOT support trailing comments — keep each pattern on
+# its own line and put comments on separate lines, or the pattern silently
+# stops matching (e.g. "foo.db  # comment" matches nothing).
+agent_memory.db
+trace.jsonl
+debug.log
+eval_report.md
+md5.text
+logs/
+
 # Vector database
 chroma_db/
 chroma_db_v2/
 rag/chroma_db/
 
-# User conversation history
+# User conversation history / personal tooling
 .chainlit/chainlit.db
-
-# Logs
-logs/
+.chainlit/translations/
+.streamlit/secrets.toml
+.dsh-vision-toolkit/
+.dsh*
 
 # Document files (not project code)
 data/*.docx
@@ -37,7 +52,8 @@ algorithms/merged_price_weather.csv
 # Temp files
 *.tmp.*
 *.bak
+*~
 
-# Datasets
+# Datasets (large, regeneratable / licensed)
 datasets/*.xlsx
 datasets/*.csv

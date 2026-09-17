@@ -1,0 +1,10 @@
+# ============================================================
+# Electricity Price Intelligence - Development Requirements
+# ============================================================
+# Install: pip install -r requirements-deploy.txt -r requirements-dev.txt
+# (this file only contains test/CI tooling)
+
+-r requirements_deploy.txt
+
+pytest>=8.0
+pytest-asyncio>=0.23

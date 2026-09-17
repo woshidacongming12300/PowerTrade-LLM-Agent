@@ -17,6 +17,20 @@ def load_system_prompts():
         raise e
 
 
+def load_react_prompts():
+    try:
+        react_prompt_path = get_abs_path(prompts_conf["react_prompt_path"])
+    except KeyError as e:
+        logger.error(f"[load_react_prompts]在yaml配置项中没有react_prompt_path配置项")
+        raise e
+
+    try:
+        return open(react_prompt_path, "r", encoding="utf-8").read()
+    except Exception as e:
+        logger.error(f"[load_react_prompts]解析ReAct提示词出错，{str(e)}")
+        raise e
+
+
 def load_rag_prompts():
     try:
         rag_prompt_path = get_abs_path(prompts_conf["rag_summarize_prompt_path"])

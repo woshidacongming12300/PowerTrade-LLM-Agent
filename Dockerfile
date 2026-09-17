@@ -7,7 +7,7 @@
 
 FROM python:3.12-slim
 
-LABEL maintainer="zhushuyu"
+LABEL maintainer="anonymous"
 LABEL description="Multi-Agent Electricity Price Forecasting System (LSTM + Chronos-T5 + Hybrid RAG)"
 
 # Prevent Python from buffering stdout/stderr

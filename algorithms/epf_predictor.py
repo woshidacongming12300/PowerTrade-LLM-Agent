@@ -144,6 +144,22 @@ def _parse_iso_date(s: str) -> Optional[date]:
     return None
 
 
+def _cn_number(s: str) -> int:
+    """Convert a small Chinese numeral (一二三…十) or digits string to int."""
+    s = s.strip()
+    if s.isdigit():
+        return int(s)
+    mapping = {"一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5,
+               "六": 6, "七": 7, "八": 8, "九": 9, "十": 10}
+    if s in mapping:
+        return mapping[s]
+    if s.startswith("十"):
+        return 10 + mapping.get(s[1:], 0)
+    if s.endswith("十"):
+        return mapping.get(s[0], 1) * 10
+    return 1
+
+
 def parse_forecast_end_date(target_date: str, forecast_anchor: date) -> date:
     """
     将自然语言或 ISO 日期解析为「预测窗口的最后一日」（含当日）。
@@ -166,13 +182,24 @@ def parse_forecast_end_date(target_date: str, forecast_anchor: date) -> date:
     if "today" in raw.lower() or "今天" in raw:
         return forecast_anchor
 
+    # Week-based semantics: 未来一周 / 一周后 / 下周 / 一星期 / next week / a week later
+    if re.search(r"(未来一周|一周[后後]?|下周|下星期|一星期[后後]?|下个?礼拜|next\s*week|a\s*week\s*later|one\s*week)", raw.lower()):
+        return forecast_anchor + timedelta(days=7)
+    # Month-based semantics: N个月后 / 下个月 / next month
+    m_month = re.search(r"([一二两三四五六七八九十0-9]+)\s*个?月[后後]|next\s*month", raw.lower())
+    if m_month:
+        n = _cn_number(m_month.group(1)) if m_month.group(1) else 1
+        return forecast_anchor + timedelta(days=30 * n)
+    if re.search(r"下个月", raw):
+        return forecast_anchor + timedelta(days=30)
+
     m = re.search(r"(\d+)\s*天[后後]|(\d+)\s*days?\s*(later|from now)", raw)
     if m:
         n = int(m.group(1) or m.group(2))
         return forecast_anchor + timedelta(days=n)
 
     raise ValueError(
-        f"无法解析目标日期: {target_date!r}，请使用 YYYY-MM-DD、明天/tomorrow、后天、N天后 等形式"
+        f"无法解析目标日期: {target_date!r}，请使用 YYYY-MM-DD、明天/tomorrow、后天、N天后、未来一周 等形式"
     )
 
 

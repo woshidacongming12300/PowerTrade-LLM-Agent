@@ -1,15 +1,18 @@
 # ============================================================
-# Electricity Price Intelligence — Production Requirements
+# Electricity Price Intelligence - Runtime Requirements
 # ============================================================
 # Install: pip install -r requirements_deploy.txt
 # For CPU-only torch (recommended for servers):
 #   pip install torch --index-url https://download.pytorch.org/whl/cpu
 # Then: pip install -r requirements_deploy.txt
+#
+# Dev/test extras: pip install -r requirements-dev.txt
 
 # --- ML / Numerical ---
 numpy>=1.26
 pandas>=2.2
 scikit-learn>=1.8
+torch>=2.2            # CPU wheel: see comment above
 
 # --- LangChain / LangGraph ---
 langchain>=1.2
@@ -17,11 +20,17 @@ langchain-core>=1.2
 langchain-community>=0.4
 langchain-chroma>=1.1
 langchain-text-splitters>=1.1
+langchain-openai>=1.6    # ChatOpenAI (DashScope compatible-mode endpoint)
 langgraph>=1.1
 langgraph-checkpoint>=4.0
 
 # --- LLM (Tongyi / DashScope) ---
 dashscope>=1.20
+openai>=2.30
+
+# --- Agent API service (FastAPI) ---
+fastapi>=0.115
+uvicorn>=0.30
 
 # --- Frontend ---
 chainlit>=2.11
@@ -48,3 +57,6 @@ aiosqlite>=0.22
 pyyaml>=6.0
 httpx>=0.28
 aiohttp>=3.13
+
+# --- Optional observability backend (Langfuse) ---
+# langfuse>=2.0     # uncomment to enable the Langfuse trace backend

@@ -3,6 +3,13 @@ import os
 import sys
 from datetime import date
 
+# Force HuggingFace offline BEFORE any library imports huggingface_hub:
+# the HF_HUB_OFFLINE flag is read once at import time, and setting it later
+# has no effect. Offline mode makes Chronos-T5 from_pretrained only look at
+# the local cache — if the model isn't downloaded yet it fails fast instead
+# of retrying unreachable endpoints for minutes.
+os.environ["HF_HUB_OFFLINE"] = "1"
+
 import requests
 import torch
 from langchain_core.tools import tool
@@ -10,7 +17,17 @@ from langchain_core.tools import tool
 from rag.rag_service import RagSummarizeService
 from utils.logger_handler import logger
 
-rag = RagSummarizeService()
+# Lazy singleton: instantiating RagSummarizeService builds the embedding model
+# (and touches chat_model), which fails at import time in environments without
+# credentials (CI). Construct it only when the rag tool is actually invoked.
+_rag: "RagSummarizeService | None" = None
+
+
+def _get_rag() -> "RagSummarizeService":
+    global _rag
+    if _rag is None:
+        _rag = RagSummarizeService()
+    return _rag
 
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if project_root not in sys.path:
@@ -57,7 +74,7 @@ _init_gridstatus_live_from_env()
 
 @tool(description="从向量存储中检索参考资料")
 def rag_summarize(query: str) -> str:
-    return rag.rag_summarize(query)
+    return _get_rag().rag_summarize(query)
 
 
 @tool
@@ -147,7 +164,8 @@ def predict_electricity_price(target_date: str) -> float:
 
     except Exception as e:
         logger.error(f"底层的时序模型推理失败: {e}")
-        return 48.88
+        # 失败时抛明确错误而非返回假数值：假数据会被 LLM 当真并误导用户。
+        raise ValueError(f"单日预测失败（{target_date}）: {e}") from e
 
 
 @tool
@@ -209,26 +227,60 @@ def forecast_electricity_prices(target_date: str) -> str:
         return json.dumps({"error": str(e), "series": []}, ensure_ascii=False)
 
 
-def _run_chronos_multistep(steps: int):
-    """Run Chronos-T5 for multi-step prediction. Returns list of floats or None."""
+def _try_load_chronos():
+    """Load the Chronos-T5 pipeline ONLY if the model is already cached locally.
+
+    Returns the pipeline or None. Never triggers a long network download:
+    if the model files are not on disk we fast-fail (offline mode), so the
+    agent's forecast tool degrades gracefully instead of blocking for minutes
+    on unreachable HuggingFace endpoints.
+    """
     global _chronos_pipeline
-    if _chronos_pipeline is None:
-        try:
-            from chronos import ChronosPipeline as _ChronosPipeline
-        except ImportError:
-            return None
+    if _chronos_pipeline is not None:
+        return _chronos_pipeline
+
+    try:
+        from chronos import ChronosPipeline as _ChronosPipeline
+    except ImportError:
+        return None
+
+    # Offline: from_pretrained only looks at the local cache; if missing it
+    # raises immediately instead of hitting huggingface.co (which may be
+    # unreachable, causing ~170s of retries).
+    old_offline = os.environ.get("HF_HUB_OFFLINE")
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    try:
         _chronos_pipeline = _ChronosPipeline.from_pretrained(
             "amazon/chronos-t5-tiny",
             device_map="cpu",
             dtype=torch.float32,
         )
+        return _chronos_pipeline
+    except Exception:
+        _chronos_pipeline = None
+        return None
+    finally:
+        if old_offline is None:
+            os.environ.pop("HF_HUB_OFFLINE", None)
+        else:
+            os.environ["HF_HUB_OFFLINE"] = old_offline
+
+
+def _run_chronos_multistep(steps: int):
+    """Run Chronos-T5 for multi-step prediction. Returns list of floats or None."""
+    pipeline = _try_load_chronos()
+    if pipeline is None:
+        return None
     try:
         hist_list = get_recent_prices_flat(date.today(), 10)
     except Exception:
         return None
 
     historical_data = torch.tensor(hist_list, dtype=torch.float32)
-    forecast = _chronos_pipeline.predict(historical_data, prediction_length=steps)
+    try:
+        forecast = pipeline.predict(historical_data, prediction_length=steps)
+    except Exception:
+        return None
     t = forecast[0]
     if t.dim() >= 2:
         return t[:, -1].tolist() if t.shape[1] >= steps else t.flatten().tolist()[:steps]
@@ -245,18 +297,12 @@ def get_chronos_prediction(target_date: str) -> float:
     target_date 支持 ISO 日期(2026-05-10)或中文描述(明天/后天/N天后)。"""
     global _chronos_pipeline
 
-    if _chronos_pipeline is None:
-        try:
-            from chronos import ChronosPipeline as _ChronosPipeline
-        except ImportError as e:
-            raise ImportError(
-                "chronos library not installed. Please: pip install chronos-forecasting"
-            ) from e
-        print("[System Init] Loading Chronos-T5-Tiny into memory (one-time only)...")
-        _chronos_pipeline = _ChronosPipeline.from_pretrained(
-            "amazon/chronos-t5-tiny",
-            device_map="cpu",
-            dtype=torch.float32,
+    pipeline = _try_load_chronos()
+    if pipeline is None:
+        raise ImportError(
+            "chronos model not available locally. Install chronos-forecasting and "
+            "pre-download amazon/chronos-t5-tiny (e.g. via hf-mirror.com) to enable "
+            "the Chronos cross-validation track."
         )
 
     fa = date.today()
@@ -274,7 +320,10 @@ def get_chronos_prediction(target_date: str) -> float:
     historical_data = torch.tensor(hist_list, dtype=torch.float32)
 
     print(f"[Chronos] prediction_length={steps} ...")
-    forecast = _chronos_pipeline.predict(historical_data, prediction_length=steps)
+    try:
+        forecast = pipeline.predict(historical_data, prediction_length=steps)
+    except Exception as e:
+        raise RuntimeError(f"Chronos inference failed: {e}") from e
 
     t = forecast[0]
     if t.dim() >= 2:

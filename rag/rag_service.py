@@ -23,12 +23,14 @@ class RagSummarizeService(object):
         self.retriever = self.vector_store.get_retriever()
         self.prompt_text = load_rag_prompts()
         self.prompt_template = PromptTemplate.from_template(self.prompt_text)
+        # chat_model is a lazy proxy: the real model is built on first use.
         self.model = chat_model
         self.chain = self._init_chain()
 
     def _init_chain(self):
-        chain = self.prompt_template | print_prompt | self.model | StrOutputParser()
-        return chain
+        # Prompt-only pipeline (no model): the model is invoked explicitly in
+        # rag_summarize so lazy construction works with LangChain's `|` semantics.
+        return self.prompt_template | print_prompt
 
     def retriever_docs(self, query: str) -> list[Document]:
         return self.retriever.invoke(query)
@@ -43,12 +45,9 @@ class RagSummarizeService(object):
             counter += 1
             context += f"【参考资料{counter}】: 参考资料：{doc.page_content} | 参考元数据：{doc.metadata}\n"
 
-        return self.chain.invoke(
-            {
-                "input": query,
-                "context": context,
-            }
-        )
+        prompt_text = self.chain.invoke({"input": query, "context": context})
+        result = self.model.invoke(prompt_text)
+        return result.content if hasattr(result, "content") else str(result)
 
 
 if __name__ == '__main__':

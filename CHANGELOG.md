@@ -262,8 +262,17 @@ python eval/run_eval.py --quick                     # 4 范式评测 → eval_re
 | 模型文件（`lstm_epf*.pth`，各 0.2MB） | ✅ 纳入提交（开箱可运行） |
 | 待提交文件总数 | **93 个**，结构干净 |
 
+### 风险 3：CI 配置的两个隐患（推送后复查发现）
+
+| 问题 | 根因 | 修复 |
+|------|------|------|
+| `eval` job 可能永不运行 | job 级 `if` **不支持 `secrets` 上下文**，`if: ${{ secrets.DASHSCOPE_API_KEY != '' }}` 求值为空 → 条件恒假 | 改为 `vars.RUN_EVAL == 'true'` 门控（变量在 job 级可用）+ job 内 shell 检查 secret，缺失时优雅跳过 |
+| `test` job 可能极慢/超限 | `requirements_deploy.txt` 的 `torch>=2.2` 在 Linux 上会拉取**自带 CUDA 的 wheel（约 2GB）** | 两个 job 均先用 `--index-url https://download.pytorch.org/whl/cpu` 装 CPU 版 torch（满足 `>=2.2`，后续安装不会覆盖） |
+
+**CI 预演验证**：临时移走 `.env` + 指向空向量库 + 离线模式（完全复刻 CI 条件）→ **73 passed, 2 skipped（22s）**，证明无凭据环境可跑通。
+
 ### 已知取舍（非阻塞）
 
 - `data/*.txt|pdf|docx`（RAG 知识库）不提交——需自行放入，`data/README.md` 已说明构建方式
-- `datasets/*.xlsx`、`algorithms/merged_price_weather.csv` 不提交（数据授权 / 可重新生成）
-- `Dockerfile` 的 `LABEL maintainer="zhushuyu"` 保留（如需匿名可自行改）
+- `datasets/*.xlsx`、`algorithms/merged_price_weather.csv` 不提交（数据授权 / 可重新生成；远程旧版本虽已跟踪，但原作者 `.gitignore` 本就声明要忽略，本次一并取消跟踪）
+- `Dockerfile` 的 `LABEL maintainer` 已改为 `anonymous`

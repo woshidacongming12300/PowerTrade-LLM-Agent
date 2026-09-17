@@ -227,9 +227,13 @@ The multi-agent system is also exposed as a FastAPI service (see `api/`):
 ### Testing & CI
 
 - **75 pytest cases** (`tests/`): unit tests for date parsing / tool registry / memory / trace / config / schemas / eval framework / supervisor routing, plus FastAPI integration tests.
-- **Credential-aware**: live-model tests are marked `integration` and auto-skipped when `DASHSCOPE_API_KEY` is absent — so CI runs the full suite without secrets (73 passed, 2 skipped, ~12s) and with secrets runs everything (75 passed).
+- **Credential-aware**: live-model tests are marked `integration` and auto-skipped when `DASHSCOPE_API_KEY` is absent — so CI runs the full suite without secrets (73 passed, 2 skipped, ~22s) and with secrets runs everything (75 passed).
 - **Lazy model loading**: `ChatOpenAI` validates the API key at construction, so models are built through a lazy proxy (`model/factory.py`) on first use — the whole app imports cleanly in credential-less environments.
-- **GitHub Actions** (`.github/workflows/ci.yml`): three jobs — `test` (full suite), `eval` (agent evaluation, runs when `DASHSCOPE_API_KEY` secret is set), `syntax` (compileall smoke).
+- **GitHub Actions** (`.github/workflows/ci.yml`): three jobs —
+  - `test` — full suite, needs **no** secrets (verified against a credential-less checkout: 73 passed / 2 skipped)
+  - `eval` — agent evaluation; enable by setting the repository **secret** `DASHSCOPE_API_KEY` **and** the repository **variable** `RUN_EVAL=true` (a job-level `if` cannot read `secrets`, so the job is gated by a variable and skips gracefully when the secret is missing). Also runnable on demand via *Actions → Run workflow*.
+  - `syntax` — `compileall` smoke test
+  - Both torch-installing jobs use the **CPU-only wheel** (`--index-url https://download.pytorch.org/whl/cpu`) to avoid pulling the ~2 GB CUDA build.
 
 ```bash
 pip install pytest
